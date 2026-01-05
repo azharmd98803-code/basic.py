@@ -1,4 +1,4 @@
-# ============================================
+18# ============================================
 # Student Performance Prediction & Analytics
 # ============================================
 
@@ -35,11 +35,11 @@ def pause():
 def load_data():
     global data
     try:
-        data = pd.read_csv("student_data.csv")
+        data = pd.read_csv("src/Basicpythonprograms.py/student_data.csv")
         print("\nDataset Loaded Successfully!")
-        print(data.head())
     except FileNotFoundError:
         print("\nError: student_data.csv not found!")
+        data = None
 
 # ============================================
 # Data Information
@@ -95,12 +95,12 @@ def statistical_summary():
 # ============================================
 
 def plot_study_vs_score():
-    sns.scatterplot(x="StudyHours", y="FinalScore", data=data)
+    sns.scatterplot(x="studyHours", y="finalScore", data=data)
     plt.title("Study Hours vs Final Score")
     plt.show()
 
 def plot_attendance_vs_score():
-    sns.scatterplot(x="Attendance", y="FinalScore", data=data)
+    sns.scatterplot(x="attendance", y="finalScore", data=data)
     plt.title("Attendance vs Final Score")
     plt.show()
 
