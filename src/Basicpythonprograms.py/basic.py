@@ -1,152 +1,143 @@
-18# ============================================
-# Student Performance Prediction & Analytics
-# ============================================
-
 import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from sklearn.linear_model import LinearRegression
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import sys
 
-# ============================================
-# Global Variables
-# ============================================
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_absolute_error, r2_score
 
+# -------------------
+# Global variables
+# -------------------
 data = None
 model = None
 
-# ============================================
-# Utility Functions
-# ============================================
-
-def line():
-    print("=" * 60)
 
 def pause():
     input("\nPress Enter to continue...")
 
-# ============================================
-# Load Dataset
-# ============================================
 
-def load_data():
+# -------------------
+# Load Dataset
+# -------------------
+def load_dataset():
     global data
     try:
         data = pd.read_csv("src/Basicpythonprograms.py/student_data.csv")
         print("\nDataset Loaded Successfully!")
     except FileNotFoundError:
         print("\nError: student_data.csv not found!")
-        data = None
-
-# ============================================
-# Data Information
-# ============================================
-
-def data_info():
-    if data is None:
-        print("Load data first!")
-        return
-    line()
-    print("DATASET INFORMATION")
-    line()
-    print(data.info())
     pause()
 
-# ============================================
-# Data Cleaning
-# ============================================
 
+# -------------------
+# Dataset Info
+# -------------------
+def dataset_info():
+    if data is None:
+        print("\nLoad dataset first!")
+        pause()
+        return
+
+    print("\nDataset Info:")
+    print(data.info())
+    print("\nFirst 5 Rows:")
+    print(data.head())
+    pause()
+
+
+# -------------------
+# Clean Data
+# -------------------
 def clean_data():
     global data
     if data is None:
-        print("Load data first!")
+        print("\nLoad dataset first!")
+        pause()
         return
-    line()
-    print("DATA CLEANING")
-    line()
-    print("\nMissing values before cleaning:")
-    print(data.isnull().sum())
 
-    data.fillna(data.mean(numeric_only=True), inplace=True)
+    print("\nDATA BEFORE CLEANING:")
+    print(data)
 
-    print("\nMissing values after cleaning:")
-    print(data.isnull().sum())
+    data.dropna(inplace=True)
+
+    print("\nDATA AFTER CLEANING:")
+    print(data)
+    print("\nData cleaned successfully!")
     pause()
 
-# ============================================
-# Statistical Summary
-# ============================================
 
+# -------------------
+# Statistical Summary
+# -------------------
 def statistical_summary():
     if data is None:
-        print("Load data first!")
+        print("\nLoad dataset first!")
+        pause()
         return
-    line()
-    print("STATISTICAL SUMMARY")
-    line()
+
+    print("\nStatistical Summary:")
     print(data.describe())
     pause()
 
-# ============================================
+
+# -------------------
 # Visualizations
-# ============================================
-
-def plot_study_vs_score():
-    sns.scatterplot(x="studyHours", y="finalScore", data=data)
-    plt.title("Study Hours vs Final Score")
-    plt.show()
-
-def plot_attendance_vs_score():
-    sns.scatterplot(x="attendance", y="finalScore", data=data)
-    plt.title("Attendance vs Final Score")
-    plt.show()
-
-def plot_correlation_heatmap():
-    plt.figure(figsize=(8,6))
-    sns.heatmap(data.corr(numeric_only=True), annot=True, cmap="coolwarm")
-    plt.title("Correlation Heatmap")
-    plt.show()
-
-def visual_menu():
+# -------------------
+def visualization_menu():
     if data is None:
-        print("Load data first!")
+        print("\nLoad dataset first!")
+        pause()
         return
+
     while True:
-        line()
-        print("VISUALIZATION MENU")
-        line()
-        print("1. Study Hours vs Score")
-        print("2. Attendance vs Score")
+        print("\nVISUALIZATION MENU")
+        print("1. Study Hours vs Marks")
+        print("2. Attendance vs Marks")
         print("3. Correlation Heatmap")
         print("4. Back")
-        ch = input("Enter choice: ")
 
-        if ch == "1":
-            plot_study_vs_score()
-        elif ch == "2":
-            plot_attendance_vs_score()
-        elif ch == "3":
-            plot_correlation_heatmap()
-        elif ch == "4":
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            sns.scatterplot(x="study_hours", y="marks", data=data)
+            plt.title("Study Hours vs Marks")
+            plt.show()
+            pause()
+
+        elif choice == "2":
+            sns.scatterplot(x="attendance", y="marks", data=data)
+            plt.title("Attendance vs Marks")
+            plt.show()
+            pause()
+
+        elif choice == "3":
+            sns.heatmap(data.corr(numeric_only=True), annot=True, cmap="coolwarm")
+            plt.title("Correlation Heatmap")
+            plt.show()
+            pause()
+
+        elif choice == "4":
             break
         else:
             print("Invalid choice!")
+            pause()
 
-# ============================================
-# Model Training
-# ============================================
 
+# -------------------
+# Train ML Model
+# -------------------
 def train_model():
     global model
+
     if data is None:
-        print("Load data first!")
+        print("\nLoad dataset first!")
+        pause()
         return
 
-    X = data[["StudyHours", "Attendance", "PreviousScore"]]
-    y = data["FinalScore"]
+    X = data[["study_hours", "attendance", "previous_score"]]
+    y = data["marks"]
 
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42
@@ -157,44 +148,48 @@ def train_model():
 
     predictions = model.predict(X_test)
 
-    line()
-    print("MODEL PERFORMANCE")
-    line()
-    print("MAE :", mean_absolute_error(y_test, predictions))
-    print("MSE :", mean_squared_error(y_test, predictions))
-    print("RMSE:", np.sqrt(mean_squared_error(y_test, predictions)))
+    print("\nModel Trained Successfully!")
+    print("MAE:", mean_absolute_error(y_test, predictions))
     print("R2 Score:", r2_score(y_test, predictions))
     pause()
 
-# ============================================
-# Prediction System
-# ============================================
 
+# -------------------
+# Predict Student Score
+# -------------------
 def predict_score():
     if model is None:
-        print("Train model first!")
+        print("\nTrain model first!")
+        pause()
         return
 
     try:
-        study = float(input("Enter Study Hours: "))
+        study_hours = float(input("Enter Study Hours: "))
         attendance = float(input("Enter Attendance %: "))
-        prev = float(input("Enter Previous Score: "))
+        previous_score = float(input("Enter Previous Score: "))
 
-        result = model.predict([[study, attendance, prev]])
-        print(f"\nPredicted Final Score: {result[0]:.2f}")
-    except:
-        print("Invalid input!")
+        input_data = pd.DataFrame(
+            [[study_hours, attendance, previous_score]],
+            columns=["study_hours", "attendance", "previous_score"]
+        )
+
+        prediction = model.predict(input_data)
+        print(f"\nPredicted Student Score: {prediction[0]:.2f}")
+
+    except ValueError:
+        print("\nInvalid input! Enter numeric values only.")
+
     pause()
 
-# ============================================
-# Main Menu
-# ============================================
 
+# -------------------
+# Main Menu
+# -------------------
 def main_menu():
     while True:
-        line()
+        print("\n===================================")
         print("STUDENT PERFORMANCE ANALYTICS SYSTEM")
-        line()
+        print("===================================")
         print("1. Load Dataset")
         print("2. Dataset Info")
         print("3. Clean Data")
@@ -207,29 +202,28 @@ def main_menu():
         choice = input("Enter your choice: ")
 
         if choice == "1":
-            load_data()
+            load_dataset()
         elif choice == "2":
-            data_info()
+            dataset_info()
         elif choice == "3":
             clean_data()
         elif choice == "4":
             statistical_summary()
         elif choice == "5":
-            visual_menu()
+            visualization_menu()
         elif choice == "6":
             train_model()
         elif choice == "7":
             predict_score()
         elif choice == "8":
-            print("Thank you!")
+            print("\nThank you 😊")
             sys.exit()
         else:
-            print("Invalid choice!")
+            print("\nInvalid choice!")
+            pause()
 
-# ============================================
-# Program Start
-# ============================================
 
+# -------------------
+# Run Program
+# -------------------
 main_menu()
-
-
